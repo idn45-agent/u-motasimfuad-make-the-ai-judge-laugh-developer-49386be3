@@ -26,8 +26,14 @@ def main(argv):
         raise SystemExit("entry must not be whitespace-only")
     LINE.encode("utf-8")
     os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8", newline="") as f:
+    target = os.path.join(out_dir, "entry.txt")
+    with open(target, "w", encoding="utf-8", newline="") as f:
         f.write(LINE)
+    # Read-back self-check: guard against a partial or truncated write.
+    with open(target, "r", encoding="utf-8", newline="") as f:
+        written = f.read()
+    if written != LINE:
+        raise SystemExit("entry.txt read-back mismatch")
     return 0
 
 
